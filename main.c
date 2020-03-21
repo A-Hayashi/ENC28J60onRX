@@ -13,11 +13,16 @@ Driver for ENC28J60 Ethernet Controller IC
 
 #define F_CPU 16000000UL
 
+#include "common.h"
+
+#if 0
 #include <avr/io.h>
 #include <avr/eeprom.h>
 #include <stdlib.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#endif
+
 #include "Serial.h"
 
 #include "checksum.h"
@@ -27,24 +32,40 @@ Driver for ENC28J60 Ethernet Controller IC
 #include "ARP.h"
 #include "UDP.h"
 
-#define heartbit_LED_DATA					DDRA	
-#define heartbit_LED_PORT					PORTA
-#define heartbit_LED						PA7
+//todo:暫定
+#define heartbit_LED_DATA		(0)
+#define heartbit_LED_PORT		(0)
+#define heartbit_LED			(0)
+#define Connection_LED_DATA		(0)
+#define Connection_LED_PORT		(0)
+#define Connection_LED			(0)
+#define Settings_LED_DATA		(0)
+#define Settings_LED_PORT		(0)
+#define Settings_LED			(0)
+#define Settings_switch_DATA	(0)
+#define Settings_switch_PORT	(0)
+#define Settings_switch_PIN		(0)
+#define Settings_switch			(0)
 
-#define Connection_LED_DATA					DDRD
-#define Connection_LED_PORT					PORTD
-#define Connection_LED						PD7
-
-#define Settings_LED_DATA					DDRC
-#define Settings_LED_PORT					PORTC
-#define Settings_LED						PC7
-
-#define Settings_switch_DATA					DDRE			// Sends Data at its Falling edge (Interrupt)
-#define Settings_switch_PORT					PORTE
-#define Settings_switch_PIN						PINE
-#define Settings_switch							PE6
-
-
+//todo:暫定
+#define TCCR1B	(0)
+#define CS10	(0)
+#define CS12	(0)
+#define WGM12	(0)
+#define OCR1A	(0)
+#define TIMSK	(0)
+#define OCIE1B	(0)
+#define EICRB	(0)
+#define ISC61	(0)
+#define ISC60	(0)
+#define EIMSK	(0)
+#define INT6	(0)
+#define UDR1	(0)
+#define UCSR1A	(0)
+#define UDRE1	(0)
+#define UCSR1B	(0)
+#define RXCIE1	(0)
+#define RXC1	(0)
 
 ////////////////////////////////	Command For The Module	//////////////////////////////////////////
 
@@ -53,13 +74,17 @@ Driver for ENC28J60 Ethernet Controller IC
 #define PORT_Change		0x30
 #define Module_Restart	0x40
 
-char ENC_Data[500];
-char Serial_Data[500];
-uint16_t Packet_length, Core_Packet =0x00;
-uint16_t Outgoing_byte_count = 0x00;
-bool Auto_Send = true;
-bool pre_connection = false;
-void change_settings(bool Method);		// Method = True for Serial, False for UDP
+static char ENC_Data[500];
+static char Serial_Data[500];
+static uint16_t Packet_length, Core_Packet =0x00;
+static uint16_t Outgoing_byte_count = 0x00;
+static bool Auto_Send = true;
+static bool pre_connection = false;
+
+static void TIMER1_COMPB_vect();
+static void INT6_vect();
+static void change_settings(bool Method);		// Method = True for Serial, False for UDP
+static void USART1_RX_vect();
 
 int main()
 {
@@ -178,7 +203,7 @@ int main()
 
 }
 
-ISR(TIMER1_COMPB_vect)
+static void TIMER1_COMPB_vect()
 {
 	heartbit_LED_PORT ^=(1<<heartbit_LED);
 	if ((Outgoing_byte_count>0)& (connected==true))
@@ -188,7 +213,7 @@ ISR(TIMER1_COMPB_vect)
 	}
 }
 
-ISR(INT6_vect)
+static void INT6_vect()
 {
 	cli();				// Turn off Interrupt
 	
@@ -210,7 +235,7 @@ ISR(INT6_vect)
 }
 
 
-void change_settings(bool Method)
+static void change_settings(bool Method)
 {
 	if (Serial_Data[1]== MAC_Change)
 	{
@@ -313,7 +338,7 @@ void change_settings(bool Method)
 }
 
 
-ISR(USART1_RX_vect)
+static void USART1_RX_vect()
 {
 	TIMSK &= ~(1<< OCIE1B);
 	
