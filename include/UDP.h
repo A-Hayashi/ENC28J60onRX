@@ -26,6 +26,8 @@
 // http://www.gnu.de/gpl-ger.html
 //
 //********************************************************************************************
+#include "ip.h"
+#include "arp.h"
 
 #define UDP_HEADER_LEN      8
 

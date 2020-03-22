@@ -26,7 +26,6 @@
 //********************************************************************************************
 #include "ethernet.h"
 #include "network.h"
-#include <string.h>
 //********************************************************************************************
 //
 // Ethernet is a large, diverse family of frame-based computer networking technologies

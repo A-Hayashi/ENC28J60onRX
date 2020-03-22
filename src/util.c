@@ -1,7 +1,4 @@
-#ifndef UTIL
-#define UTIL
-
-#include <string.h>
+#include "util.h"
 
 unsigned char Low(const unsigned short value){
  return (value&0xFF);
@@ -71,4 +68,3 @@ void CharsCat(unsigned char *destination, unsigned short *destinationLength, con
  memcpy(destination + *destinationLength, source, sourceLength);
  *destinationLength += sourceLength;
 }
-#endif

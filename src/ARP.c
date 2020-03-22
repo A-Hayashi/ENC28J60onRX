@@ -25,9 +25,8 @@
 //
 //********************************************************************************************
 #include "arp.h"
-#include "ethernet.h"
 #include "network.h"
-#include <string.h>
+
 //********************************************************************************************
 //
 // Address Resolution Protocol (ARP) is the method for finding a host's hardware address

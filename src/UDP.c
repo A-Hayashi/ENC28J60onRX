@@ -24,14 +24,9 @@
 // http://www.gnu.de/gpl-ger.html
 //
 //********************************************************************************************
-#include <string.h>
-#include "enc28j60.h"
-#include "ethernet.h"
-#include "ip.h"
-#include "arp.h"
 #include "udp.h"
 #include "network.h"
-#include "util.c"
+#include "util.h"
 //
 //********************************************************************************************
 // The User Datagram Protocol offers only a minimal transport service

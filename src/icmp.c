@@ -24,12 +24,9 @@
 // http://www.gnu.de/gpl-ger.html
 //
 //********************************************************************************************
-#include <string.h>
-#include "enc28j60.h"
-#include "ethernet.h"
 #include "ip.h"
 #include "icmp.h"
-#include "util.c"
+#include "util.h"
 //********************************************************************************************
 //
 // The Internet Control Message Protocol (ICMP) is one of the core protocols of the

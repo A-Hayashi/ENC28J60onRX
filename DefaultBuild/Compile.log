@@ -8,36 +8,104 @@ gcc ./src/ethernet.c -E -MM -w  -I../Pub -I../Pub/apl -I../Pub/common -I../Pub/d
 ccrx    ./src/ethernet.c -isa=rxv1 -fpu -auto_enum -output=obj -obj_path=DefaultBuild -debug -optimize=0 -volatile -nologo -utf8  -include=../Pub -include=../Pub/apl -include=../Pub/common -include=../Pub/drv -include=../Pub/hsm -include=../Pub/mid -include=../Pub/mid/model -include=../Pub/modelDefine -include=../Pub/os -include=../Pub/task -include=../Pub/Test -include=../Pub/Utl -include=./include 2>&1 | tee DefaultBuild/ethernet_Compile.log
 gcc ./src/http.c -E -MM -w  -I../Pub -I../Pub/apl -I../Pub/common -I../Pub/drv -I../Pub/hsm -I../Pub/mid -I../Pub/mid/model -I../Pub/modelDefine -I../Pub/os -I../Pub/task -I../Pub/Test -I../Pub/Utl -I./include > DefaultBuild/http.d       
 ccrx    ./src/http.c -isa=rxv1 -fpu -auto_enum -output=obj -obj_path=DefaultBuild -debug -optimize=0 -volatile -nologo -utf8  -include=../Pub -include=../Pub/apl -include=../Pub/common -include=../Pub/drv -include=../Pub/hsm -include=../Pub/mid -include=../Pub/mid/model -include=../Pub/modelDefine -include=../Pub/os -include=../Pub/task -include=../Pub/Test -include=../Pub/Utl -include=./include 2>&1 | tee DefaultBuild/http_Compile.log
-./src/http.c(50):E0520020:Identifier "HTTP_MAX_HEADER_ROWS_LENGTH" is undefined
-./src/http.c(51):E0520020:Identifier "HTTP_MAX_DATA_LENGTH" is undefined
-./src/http.c(59):E0520020:Identifier "HTTP_MAX_URL_LENGTH" is undefined
-./src/http.c(84):W0520815:Type qualifier on return type is meaningless
-./src/http.c(193):E0520029:Expected an expression
-./src/http.c(193):E0520053:Expected a ":"
-./src/http.c(195):W0520167:Argument of type "const unsigned char *" is incompatible with parameter of type "const char *"
-./src/http.c(301):E0520268:Declaration may not appear after executable statement in block
-./src/http.c(383):W0520167:Argument of type "unsigned char *" is incompatible with parameter of type "char *"
-./src/http.c(383):W0520167:Argument of type "const unsigned char *" is incompatible with parameter of type "const char *"
-./src/http.c(461):W0520815:Type qualifier on return type is meaningless
-./src/http.c(463):W0520167:Argument of type "const unsigned char *" is incompatible with parameter of type "const char *"
-./src/http.c(463):W0520513:A value of type "char *" cannot be assigned to an entity of type "unsigned char *"
-./src/http.c(468):W0520167:Argument of type "const unsigned char *" is incompatible with parameter of type "const char *"
-./src/http.c(486):E0520268:Declaration may not appear after executable statement in block
-./src/http.c(510):W0520167:Argument of type "const unsigned char *" is incompatible with parameter of type "const char *"
-./src/http.c(524):W0520167:Argument of type "const unsigned char *" is incompatible with parameter of type "const char *"
-./src/http.c(543):W0520167:Argument of type "unsigned char *" is incompatible with parameter of type "const char *"
-./src/http.c(562):E0520268:Declaration may not appear after executable statement in block
-./src/http.c(585):E0520268:Declaration may not appear after executable statement in block
-./src/http.c(608):E0520020:Identifier "HTTP_SERVER_PORT" is undefined
-./src/http.c(612):E0520020:Identifier "NET_HANDLE_RESULT_DROP" is undefined
-./src/http.c(616):E0520020:Identifier "NET_HANDLE_RESULT_DROP" is undefined
-./src/http.c(621):E0520020:Identifier "NET_HANDLE_RESULT_OK" is undefined
-./src/http.c(663):E0520268:Declaration may not appear after executable statement in block
-./src/http.c(680):W0520167:Argument of type "unsigned char *" is incompatible with parameter of type "const char *"
-./src/http.c(680):W0520167:Argument of type "unsigned char *" is incompatible with parameter of type "const char *"
-./src/http.c(680):W0520167:Argument of type "unsigned char *" is incompatible with parameter of type "const char *"
-./src/http.c(689):E0520268:Declaration may not appear after executable statement in block
-./src/http.c(718):E0520268:Declaration may not appear after executable statement in block
+./include/http.h(47):E0520020:Identifier "HTTP_MAX_HEADER_ROWS_LENGTH" is undefined
+./include/http.h(48):E0520020:Identifier "HTTP_MAX_DATA_LENGTH" is undefined
+./include/http.h(56):E0520020:Identifier "HTTP_MAX_URL_LENGTH" is undefined
+./include/http.h(81):W0520815:Type qualifier on return type is meaningless
+./include/http.h(86):W0520815:Type qualifier on return type is meaningless
+./src/http.c(18):E0520065:Expected a ";"
+./src/http.c(75):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(4):W0520177:Variable "incomingRequestConnectionId" was declared but never referenced
+./src/http.c(5):W0520177:Variable "incomingResponseConnectionId" was declared but never referenced
+./src/http.c(6):W0520177:Variable "incomingRequestState" was declared but never referenced
+./src/http.c(7):W0520177:Variable "incomingResponseState" was declared but never referenced
+./src/http.c(8):W0520177:Variable "incomingMessage" was declared but never referenced
+./src/http.c(9):W0520177:Variable "incomingRequest" was declared but never referenced
+./src/http.c(10):W0520177:Variable "incomingResponse" was declared but never referenced
+./src/http.c(11):W0520177:Variable "incomingResponseStatusMessage" was declared but never referenced
+./src/http.c(77):E0520169:Expected a declaration
+./src/http.c(94):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(95):E0520169:Expected a declaration
+./src/http.c(134):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(135):E0520169:Expected a declaration
+./src/http.c(142):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(143):E0520169:Expected a declaration
+./src/http.c(173):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(174):E0520169:Expected a declaration
+./src/http.c(176):W0520077:This declaration has no storage class or type specifier
+./src/http.c(176):E0520065:Expected a ";"
+./src/http.c(177):E0520169:Expected a declaration
+./src/http.c(178):E0520169:Expected a declaration
+./src/http.c(217):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(218):E0520040:Expected an identifier
+./src/http.c(218):E0520040:Expected an identifier
+./src/http.c(218):E0520040:Expected an identifier
+./src/http.c(218):E0520040:Expected an identifier
+./src/http.c(218):W0520077:This declaration has no storage class or type specifier
+./src/http.c(219):E0520169:Expected a declaration
+./src/http.c(220):E0520169:Expected a declaration
+./src/http.c(250):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(251):E0520169:Expected a declaration
+./src/http.c(255):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(256):W0520077:This declaration has no storage class or type specifier
+./src/http.c(257):W0520077:This declaration has no storage class or type specifier
+./src/http.c(257):E0520065:Expected a ";"
+./src/http.c(258):E0520169:Expected a declaration
+./src/http.c(259):E0520169:Expected a declaration
+./src/http.c(261):W0520077:This declaration has no storage class or type specifier
+./src/http.c(261):E0520065:Expected a ";"
+./src/http.c(262):E0520169:Expected a declaration
+./src/http.c(263):E0520169:Expected a declaration
+./src/http.c(288):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(289):E0520169:Expected a declaration
+./src/http.c(333):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(334):E0520169:Expected a declaration
+./src/http.c(347):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(348):E0520169:Expected a declaration
+./src/http.c(352):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(353):E0520169:Expected a declaration
+./src/http.c(402):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(403):E0520169:Expected a declaration
+./src/http.c(409):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(410):E0520169:Expected a declaration
+./src/http.c(439):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(440):E0520040:Expected an identifier
+./src/http.c(440):E0520018:Expected a ")"
+./src/http.c(440):W0520077:This declaration has no storage class or type specifier
+./src/http.c(441):E0520040:Expected an identifier
+./src/http.c(441):E0520040:Expected an identifier
+./src/http.c(441):E0520040:Expected an identifier
+./src/http.c(441):W0520077:This declaration has no storage class or type specifier
+./src/http.c(442):E0520040:Expected an identifier
+./src/http.c(442):W0520077:This declaration has no storage class or type specifier
+./src/http.c(443):E0520040:Expected an identifier
+./src/http.c(443):E0520040:Expected an identifier
+./src/http.c(443):E0520040:Expected an identifier
+./src/http.c(443):W0520077:This declaration has no storage class or type specifier
+./src/http.c(444):E0520040:Expected an identifier
+./src/http.c(444):E0520040:Expected an identifier
+./src/http.c(444):E0520040:Expected an identifier
+./src/http.c(444):E0520018:Expected a ")"
+./src/http.c(444):W0520077:This declaration has no storage class or type specifier
+./src/http.c(445):E0520169:Expected a declaration
+./src/http.c(458):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(459):E0520169:Expected a declaration
+./src/http.c(486):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(487):W0520077:This declaration has no storage class or type specifier
+./src/http.c(488):E0520169:Expected a declaration
+./src/http.c(489):E0520169:Expected a declaration
+./src/http.c(616):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(617):E0520169:Expected a declaration
+./src/http.c(634):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(635):E0520040:Expected an identifier
+./src/http.c(635):E0520040:Expected an identifier
+./src/http.c(635):E0520040:Expected an identifier
+./src/http.c(635):E0520040:Expected an identifier
+./src/http.c(635):W0520077:This declaration has no storage class or type specifier
+./src/http.c(636):E0520169:Expected a declaration
+./src/http.c(637):E0520169:Expected a declaration
+./src/http.c(660):W0520012:Parsing restarts here after previous syntax error
+./src/http.c(18):W0520177:Function "HttpHeadersPutChar" was declared but never referenced
 gcc ./src/icmp.c -E -MM -w  -I../Pub -I../Pub/apl -I../Pub/common -I../Pub/drv -I../Pub/hsm -I../Pub/mid -I../Pub/mid/model -I../Pub/modelDefine -I../Pub/os -I../Pub/task -I../Pub/Test -I../Pub/Utl -I./include > DefaultBuild/icmp.d       
 ccrx    ./src/icmp.c -isa=rxv1 -fpu -auto_enum -output=obj -obj_path=DefaultBuild -debug -optimize=0 -volatile -nologo -utf8  -include=../Pub -include=../Pub/apl -include=../Pub/common -include=../Pub/drv -include=../Pub/hsm -include=../Pub/mid -include=../Pub/mid/model -include=../Pub/modelDefine -include=../Pub/os -include=../Pub/task -include=../Pub/Test -include=../Pub/Utl -include=./include 2>&1 | tee DefaultBuild/icmp_Compile.log
 gcc ./src/ip.c -E -MM -w  -I../Pub -I../Pub/apl -I../Pub/common -I../Pub/drv -I../Pub/hsm -I../Pub/mid -I../Pub/mid/model -I../Pub/modelDefine -I../Pub/os -I../Pub/task -I../Pub/Test -I../Pub/Utl -I./include > DefaultBuild/ip.d       

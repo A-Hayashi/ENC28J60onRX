@@ -1,11 +1,3 @@
-//#include <avr/io.h>
-//#include <util/delay.h>
-//#include <string.h>
-#include "util.c"
-#include "enc28j60.c"
-#include "ethernet.c"
-#include "arp.c"
-#include "ip.c"
 #include "network.h"
 
 #if defined(TCP) || defined(UDP)
