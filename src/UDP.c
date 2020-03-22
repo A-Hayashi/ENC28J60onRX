@@ -95,10 +95,11 @@ static void UdpGenerateHeader(unsigned char *buffer, const unsigned short source
 //
 //********************************************************************************************
 unsigned short UdpSendDataMac(const unsigned char* mac, const unsigned char *ip, const unsigned short remotePort, const unsigned short port, const unsigned char *data, const unsigned short dataLength){
+ unsigned char *buffer;
  if(dataLength + ETH_HEADER_LEN + IP_HEADER_LEN + UDP_HEADER_LEN + dataLength > MAX_TX_BUFFER){
   return 0;
  }
- unsigned char *buffer = NetGetBuffer();
+ buffer = NetGetBuffer();
  eth_generate_header(buffer, ETH_TYPE_IP_V, mac);
  ip_generate_header(buffer, IP_HEADER_LEN + UDP_HEADER_LEN + dataLength, IP_PROTO_UDP_V, ip);
  memcpy(buffer + UDP_DATA_P, data, dataLength);
@@ -131,7 +132,6 @@ unsigned short UdpSendData(const unsigned char ip[IP_V4_ADDRESS_SIZE], const uns
 //
 //********************************************************************************************
 unsigned short UdpSendDataTmpPort(const unsigned char *ip, const unsigned short remotePort, const unsigned char *data, const unsigned short dataLength){
- unsigned short port = connectPortRotaiting;
  unsigned char *buffer = NetGetBuffer();
  connectPortRotaiting = (connectPortRotaiting == NET_MAX_PORT) ? NET_MIN_DINAMIC_PORT : connectPortRotaiting + 1;
  return UdpSendData(ip, remotePort, connectPortRotaiting, data, dataLength);
@@ -180,11 +180,13 @@ unsigned char UdpReceiveData(const unsigned char *ip, const unsigned short remot
 //********************************************************************************************
 void UdpHandleIncomingPacket(unsigned char *buffer, unsigned short length){
  UdpDatagram datagram;
+ unsigned char result;
+
  memcpy(datagram.mac, buffer + ETH_SRC_MAC_P, MAC_ADDRESS_SIZE);
  memcpy(datagram.ip, buffer + IP_SRC_IP_P, IP_V4_ADDRESS_SIZE);
  datagram.port = CharsToShort(buffer + UDP_DST_PORT_H_P);
  datagram.remotePort = CharsToShort(buffer + UDP_SRC_PORT_H_P);
- unsigned char result = UdpOnIncomingDatagram(datagram, buffer + UDP_DATA_P, CharsToShort(buffer + UDP_LENGTH_P) - UDP_HEADER_LEN);
+ result = UdpOnIncomingDatagram(datagram, buffer + UDP_DATA_P, CharsToShort(buffer + UDP_LENGTH_P) - UDP_HEADER_LEN);
  if(result == NET_HANDLE_RESULT_REJECT){
   IcmpSendUnreachable(buffer, datagram.mac, datagram.ip, CharsToShort(buffer + IP_TOTLEN_H_P));
  }

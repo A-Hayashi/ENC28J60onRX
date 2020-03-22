@@ -26,6 +26,8 @@
 // http://www.gnu.de/gpl-ger.html
 //
 //********************************************************************************************
+#include "ip.h"
+
 #define ARP_V4_PACKET_LEN			28
 
 #define ARP_OPCODE_REQUEST_V	0x0001
@@ -63,6 +65,7 @@
 #define ARP_CACHE_MAC_P         0
 #define ARP_CACHE_IP_P          (MAC_ADDRESS_SIZE)
 
+extern const unsigned char avrIp[IP_V4_ADDRESS_SIZE];
 //********************************************************************************************
 //
 // Prototype function

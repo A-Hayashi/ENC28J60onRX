@@ -3,35 +3,35 @@
 
 #include <string.h>
 
-inline unsigned char Low(const unsigned short value){
+unsigned char Low(const unsigned short value){
  return (value&0xFF);
 }
 
-inline unsigned char High(const unsigned short value){
+unsigned char High(const unsigned short value){
  return ((value>>8)&0xFF);
 }
 
-inline void LowPut(unsigned short *value, const unsigned char ch){
+void LowPut(unsigned short *value, const unsigned char ch){
  ((unsigned char*)value)[0] = ch;
 }
 
-inline void HighPut(unsigned short *value, const unsigned char ch){
+void HighPut(unsigned short *value, const unsigned char ch){
  ((unsigned char*)value)[1] = ch;
 }
 
-inline unsigned short CharsToShort(const unsigned char *value){
+unsigned short CharsToShort(const unsigned char *value){
  unsigned short numericValue;
  ((unsigned char*)&numericValue)[1] = value[0];
  ((unsigned char*)&numericValue)[0] = value[1];
  return numericValue;
 }
 
-inline void CharsPutShort(unsigned char *chars, const unsigned short value){
+void CharsPutShort(unsigned char *chars, const unsigned short value){
  chars[0] = ((unsigned char*)&value)[1];
  chars[1] = ((unsigned char*)&value)[0];
 }
 
-inline unsigned long CharsToLong(const unsigned char *value){
+unsigned long CharsToLong(const unsigned char *value){
  unsigned long numericValue;
  ((unsigned char*)&numericValue)[3] = value[0];
  ((unsigned char*)&numericValue)[2] = value[1];
@@ -41,11 +41,12 @@ inline unsigned long CharsToLong(const unsigned char *value){
 }
 
 unsigned char ParseLong(unsigned long *number, const unsigned char *ch, const unsigned short length){
+ unsigned short i;
+ unsigned long decimalIndex = 1;
+
  if(length == 0){
   return 0;
  }
- unsigned short i;
- unsigned long decimalIndex = 1;
  *number = 0;
  for(i = length - 1;; i--){
   if(ch[i] < '0' || ch[i] > '9'){

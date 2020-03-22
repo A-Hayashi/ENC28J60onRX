@@ -9,7 +9,7 @@
 #define TCP_ON_INCOMING_DATA_CALLBACK HttpTcpOnIncomingData
 #define TCP_ON_DISCONNECT_CALLBACK HttpTcpOnDisconnect
 
-#include "tcp.c"
+#include "tcp.h"
 
 #ifndef HTTP_TCP_INCLUDED
 #define HTTP_TCP_INCLUDED 0

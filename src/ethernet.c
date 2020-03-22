@@ -48,6 +48,8 @@
 //
 //
 //********************************************************************************************
+static unsigned char EthCheckType(const unsigned char *rxtx_buffer, const unsigned short type);
+
 //********************************************************************************************
 //
 // Function : eth_generate_header
@@ -112,7 +114,7 @@ unsigned short software_checksum(const unsigned char *rxtx_buffer, unsigned shor
 	return( (unsigned short) sum ^ 0xFFFF);
 }
 
-unsigned char EthCheckType(const unsigned char *rxtx_buffer, const unsigned short type){
+static unsigned char EthCheckType(const unsigned char *rxtx_buffer, const unsigned short type){
  return ( rxtx_buffer[ ETH_TYPE_H_P ] == High(type) && rxtx_buffer[ ETH_TYPE_L_P ] == Low(type));
 }
 

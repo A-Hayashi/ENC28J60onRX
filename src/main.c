@@ -37,7 +37,6 @@
 #define ENC28J60_CS_PIN PORTB2
 
 // define IP, MAC address for you AVR
-#define NET_IP 192, 168, 0, 150
 #define NET_MAC 0x15, 0x8, 0x45, 0x89, 0x69, 0x99
 // define RAM buffer size for network packets
 #define NET_BUFFER_SIZE 400
@@ -48,9 +47,9 @@
 #define F_CPU 16000000UL
 
 // include tcp.c protocol functions
-#include "../../src/tcp.c"
+#include "tcp.h"
 // include network.c (main include for library)
-#include "../../src/network.c"
+#include "network.h"
 #include <stdio.h>
 
 // function called if new tcp client is connecting into AVR, it is like firewall,

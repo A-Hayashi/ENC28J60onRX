@@ -1,2 +1,0 @@
-./src/ENC_Ethernet.c(180):W0520177:Function "ENC_Write_and_Read_dummy" was declared but never referenced
-./src/ENC_Ethernet.c(274):W0520177:Function "PHY_read" was declared but never referenced

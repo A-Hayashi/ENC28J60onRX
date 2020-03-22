@@ -57,7 +57,24 @@
 // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 //
 //********************************************************************************************
+#define ICMP_TYPE_ECHOREPLY_V 	                0
+#define ICMP_TYPE_ECHOREQUEST_V                 8
+#define ICMP_TYPE_UNREACHABLE_V                 3
+#define ICMP_CODE_UNREACHABLE_HOST_SERVICE_V    12
 
+#define ICMP_HEADER_LEN         8
+#define ICMP_MAX_DATA	        60
+
+// icmp buffer position
+#define ICMP_TYPE_P				0x22
+#define ICMP_CODE_P				0x23
+#define ICMP_CHECKSUM_H_P		0x24
+#define ICMP_CHECKSUM_L_P		0x25
+#define ICMP_IDENTIFIER_H_P		0x26
+#define ICMP_IDENTIFIER_L_P		0x27
+#define ICMP_SEQUENCE_H_P		0x28
+#define ICMP_SEQUENCE_L_P		0x29
+#define ICMP_DATA_P				(ICMP_TYPE_P + ICMP_HEADER_LEN)
 //*******************************************************************************************
 //
 // Function : icmp_send_reply
@@ -65,6 +82,8 @@
 //
 //*******************************************************************************************
 static void IcmpGeneratePacket(unsigned char *buffer, unsigned char icmpType, unsigned char icmpCode, unsigned char dataLength){
+ unsigned short test;
+
  buffer[ICMP_TYPE_P] = icmpType;
  buffer[ICMP_CODE_P] = icmpCode;
  // clear icmp checksum
@@ -73,7 +92,7 @@ static void IcmpGeneratePacket(unsigned char *buffer, unsigned char icmpType, un
  // calculate new checksum.
  // ICMP checksum calculation begin at ICMP type to ICMP data.
  // Before calculate new checksum the checksum field must be zero.
- unsigned short test = software_checksum(buffer + ICMP_TYPE_P, ICMP_HEADER_LEN + dataLength, 0);
+ test = software_checksum(buffer + ICMP_TYPE_P, ICMP_HEADER_LEN + dataLength, 0);
  CharsPutShort(buffer + ICMP_CHECKSUM_H_P, test);
 }
 
@@ -137,7 +156,8 @@ unsigned char icmp_send_reply ( unsigned char *rxtx_buffer, unsigned short lengt
 // Description : Send icmp response for any unreachable service on ip protocol
 //
 //*******************************************************************************************
-void IcmpSendUnreachable(unsigned char *buffer, const unsigned char remoteMac[MAC_ADDRESS_SIZE], const unsigned char remoteIp[IP_V4_ADDRESS_SIZE], unsigned short ipTotalLength){
+void IcmpSendUnreachable(unsigned char *buffer, const unsigned char *remoteMac, const unsigned char *remoteIp, unsigned short ipTotalLength)
+{
  if(ipTotalLength > 8 + IP_HEADER_LEN){
   ipTotalLength = 8 + IP_HEADER_LEN;
  }

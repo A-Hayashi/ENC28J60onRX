@@ -48,9 +48,9 @@
 #define F_CPU 16000000UL
 
 // include tcp.c protocol functions
-#include "../../src/tcp.c"
+#include "tcp.h"
 // include network.c (main include for library)
-#include "../../src/network.c"
+#include "network.h"
 #include <stdio.h>
 
 // declare global variable for store client connection so we can work with connection in all callbacks

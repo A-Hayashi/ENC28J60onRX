@@ -1,6 +1,6 @@
-#include <avr/io.h>
-#include <util/delay.h>
-#include <string.h>
+//#include <avr/io.h>
+//#include <util/delay.h>
+//#include <string.h>
 #include "util.c"
 #include "enc28j60.c"
 #include "ethernet.c"
@@ -40,6 +40,8 @@ void NetHandleNetwork(){
 void NetHandleIncomingPacket(unsigned short length){
  {
   unsigned char srcMac[MAC_ADDRESS_SIZE];
+  unsigned char srcIp[IP_V4_ADDRESS_SIZE];
+
   memcpy(srcMac, buffer + ETH_SRC_MAC_P, MAC_ADDRESS_SIZE);
   if(ArpPacketIsArp(buffer, ARP_OPCODE_REQUEST_V)){
    ArpSendReply(buffer, srcMac);
@@ -48,7 +50,6 @@ void NetHandleIncomingPacket(unsigned short length){
   if(!ip_packet_is_ip(buffer)){
    return;
   }
-  unsigned char srcIp[IP_V4_ADDRESS_SIZE];
   memcpy(srcIp, buffer + IP_SRC_IP_P, IP_V4_ADDRESS_SIZE);
   #ifdef ICMP
   if(icmp_send_reply(buffer, length, srcMac, srcIp)){

@@ -1,1 +1,2 @@
-IP.o: src/IP.c include/IP.h include/common.h include/ENC_Ethernet.h
+ip.o: src/ip.c include/ip.h include/ethernet.h include/enc28j60.h \
+ include/arp.h include/ip.h

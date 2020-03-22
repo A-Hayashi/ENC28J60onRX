@@ -26,6 +26,8 @@
 // http://www.gnu.de/gpl-ger.html
 //
 //********************************************************************************************
+#include "ip.h"
+
 #define TCP_HEADER_LEN		20
 #define TCP_OPTION_LEN		4
 
