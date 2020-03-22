@@ -1,8 +1,8 @@
-#ifndef IP
-#define IP
+#ifndef ETH
+#define ETH
 //********************************************************************************************
 //
-// File : ip.h implement for Internet Protocol
+// File : ethernet.h implement for Ethernet Protocol
 //
 //********************************************************************************************
 //
@@ -26,40 +26,27 @@
 // http://www.gnu.de/gpl-ger.html
 //
 //********************************************************************************************
-#define IP_HEADER_LEN		20
+#define ETH_TYPE_ARP_V		0x0806
+#define ETH_TYPE_ARP_H_V	0x08
+#define ETH_TYPE_ARP_L_V	0x06
+#define ETH_TYPE_IP_V		0x0800
+#define ETH_TYPE_IP_H_V		0x08
+#define ETH_TYPE_IP_L_V		0x00
 
-#define IP_PROTO_ICMP_V		0x01
-#define IP_PROTO_TCP_V		0x06
-#define IP_PROTO_UDP_V		0x11
-#define IP_V4_V				0x40
-#define IP_V4_ADDRESS_SIZE  4
-#define IP_HEADER_LENGTH_V	0x05
+#define ETH_HEADER_LEN		14
 
-#define IP_P				0x0E
-#define IP_HEADER_VER_LEN_P	0x0E
-#define IP_TOS_P			0x0F
-#define IP_TOTLEN_H_P		0x10
-#define IP_TOTLEN_L_P		0x11
-#define IP_ID_H_P			0x12
-#define IP_ID_L_P			0x13
-#define IP_FLAGS_H_P		0x14
-#define IP_FLAGS_L_P		0x15
-#define IP_TTL_P			0x16
-#define IP_PROTO_P			0x17
-#define IP_CHECKSUM_H_P		0x18
-#define IP_CHECKSUM_L_P		0x19
-#define IP_SRC_IP_P			0x1A
-#define IP_DST_IP_P			0x1E
-
+#define ETH_DST_MAC_P		0
+#define ETH_SRC_MAC_P		6
+#define ETH_TYPE_H_P		12
+#define ETH_TYPE_L_P		13
 
 //********************************************************************************************
 //
 // Prototype function
 //
 //********************************************************************************************
-//void ip_fill_ip_address( unsigned char *buf, unsigned char *avr_ip, unsigned char *dest_ip );
-//void ip_fill_hdr_checksum( unsigned char *buf );
-
-unsigned char ip_packet_is_ip(unsigned char *buffer);
-void ip_generate_header(unsigned char *buffer, unsigned short totalLength, unsigned char protocol, const unsigned char *destIp);
+unsigned short software_checksum(const unsigned char *rxtx_buffer, unsigned short len, unsigned long sum);
+void eth_generate_header(unsigned char *buffer, const unsigned short type, const unsigned char destMac[MAC_ADDRESS_SIZE]);
+unsigned char EthCheckType(const unsigned char *rxtx_buffer, const unsigned short type);
+unsigned short EthWaitPacket(unsigned char *rxtx_buffer, unsigned short type, unsigned short timeout);
 #endif

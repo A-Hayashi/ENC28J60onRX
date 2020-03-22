@@ -1,8 +1,8 @@
-#ifndef IP
-#define IP
+#ifndef ICMP
+#define ICMP
 //********************************************************************************************
 //
-// File : ip.h implement for Internet Protocol
+// File : icmp.h implement for Internet Control Message Protocol
 //
 //********************************************************************************************
 //
@@ -26,40 +26,31 @@
 // http://www.gnu.de/gpl-ger.html
 //
 //********************************************************************************************
-#define IP_HEADER_LEN		20
 
-#define IP_PROTO_ICMP_V		0x01
-#define IP_PROTO_TCP_V		0x06
-#define IP_PROTO_UDP_V		0x11
-#define IP_V4_V				0x40
-#define IP_V4_ADDRESS_SIZE  4
-#define IP_HEADER_LENGTH_V	0x05
+#define ICMP_TYPE_ECHOREPLY_V 	                0
+#define ICMP_TYPE_ECHOREQUEST_V                 8
+#define ICMP_TYPE_UNREACHABLE_V                 3
+#define ICMP_CODE_UNREACHABLE_HOST_SERVICE_V    12
 
-#define IP_P				0x0E
-#define IP_HEADER_VER_LEN_P	0x0E
-#define IP_TOS_P			0x0F
-#define IP_TOTLEN_H_P		0x10
-#define IP_TOTLEN_L_P		0x11
-#define IP_ID_H_P			0x12
-#define IP_ID_L_P			0x13
-#define IP_FLAGS_H_P		0x14
-#define IP_FLAGS_L_P		0x15
-#define IP_TTL_P			0x16
-#define IP_PROTO_P			0x17
-#define IP_CHECKSUM_H_P		0x18
-#define IP_CHECKSUM_L_P		0x19
-#define IP_SRC_IP_P			0x1A
-#define IP_DST_IP_P			0x1E
+#define ICMP_HEADER_LEN         8
+#define ICMP_MAX_DATA	        60
 
+// icmp buffer position
+#define ICMP_TYPE_P				0x22
+#define ICMP_CODE_P				0x23
+#define ICMP_CHECKSUM_H_P		0x24
+#define ICMP_CHECKSUM_L_P		0x25
+#define ICMP_IDENTIFIER_H_P		0x26
+#define ICMP_IDENTIFIER_L_P		0x27
+#define ICMP_SEQUENCE_H_P		0x28
+#define ICMP_SEQUENCE_L_P		0x29
+#define ICMP_DATA_P				(ICMP_TYPE_P + ICMP_HEADER_LEN)
 
 //********************************************************************************************
 //
 // Prototype function
 //
 //********************************************************************************************
-//void ip_fill_ip_address( unsigned char *buf, unsigned char *avr_ip, unsigned char *dest_ip );
-//void ip_fill_hdr_checksum( unsigned char *buf );
-
-unsigned char ip_packet_is_ip(unsigned char *buffer);
-void ip_generate_header(unsigned char *buffer, unsigned short totalLength, unsigned char protocol, const unsigned char *destIp);
+unsigned char icmp_send_reply ( unsigned char *rxtx_buffer, unsigned short length, unsigned char *dest_mac, unsigned char *dest_ip );
+void IcmpSendUnreachable(unsigned char *buffer, const unsigned char remoteMac[MAC_ADDRESS_SIZE], const unsigned char remoteIp[IP_V4_ADDRESS_SIZE], unsigned short ipDataLengt);
 #endif

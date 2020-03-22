@@ -1,352 +1,137 @@
-
 /*
 
-Shadman Sakib
-2RA Technology Limited
+ This example show simple Tcp synchronous not persistent client communication.
 
-Driver for ENC28J60 Ethernet Controller IC
+ Application protocol is based on characters string messages end of message is defined by ASCII character 0 (null zero character).
+ Client send one message as request after connect to server and server response with one message to client
+ and after that client disconnect from server.
 
-23 June, 2016
+ Client logic is only send received message into stdout by stdio library.
+
+ Definition of stdout is not in example, but can be find here:
+ http://www.gnu.org/savannah-checkouts/non-gnu/avr-libc/user-manual/group__avr__stdio.html
+ I recommend in example use uart serial line as stdout but can be anything (display what you use).
+
+ Hardware configuration is here defined for AVR atmega328p with 16 MHz.
 
 */
 
+// define SPI pins connected to enc28j60 SI, SO, SCK pins
+// SPI pins can changes on different AVR processors look into chip datasheet where SPI pins are
+// this example is for AVR atmega328p
+#define ENC28J60_DDR DDRB
+#define ENC28J60_PORT PORTB
+#define ENC28J60_SI_PIN_DDR DDB3
+#define ENC28J60_SI_PIN PORTB3
+#define ENC28J60_SO_PIN_DDR DDB4
+#define ENC28J60_SCK_PIN_DDR DDB5
+#define ENC28J60_SCK_PIN PORTB5
 
+// define rest digitals I/O pins connected to enc28j60 RESET, INT, CS pins
+// this pins have to be in same DDR and PORT as SPI pins
+#define ENC28J60_RESET_PIN_DDR DDB0
+#define ENC28J60_RESET_PIN PORTB0
+#define ENC28J60_INT_PIN_DDR DDB1
+#define ENC28J60_INT_PIN PORTB1
+#define ENC28J60_CS_PIN_DDR DDB2
+#define ENC28J60_CS_PIN PORTB2
+
+// define IP, MAC address for you AVR
+#define NET_IP 192, 168, 0, 150
+#define NET_MAC 0x15, 0x8, 0x45, 0x89, 0x69, 0x99
+// define RAM buffer size for network packets
+#define NET_BUFFER_SIZE 400
+// define maximum tcp connection can live in AVR (server/client connections)
+#define TCP_MAX_CONNECTIONS 2
+
+// define your cpu frequency because of delay.h library
 #define F_CPU 16000000UL
 
-#include "common.h"
+// include tcp.c protocol functions
+#include "../../src/tcp.c"
+// include network.c (main include for library)
+#include "../../src/network.c"
+#include <stdio.h>
 
-#if 0
-#include <avr/io.h>
-#include <avr/eeprom.h>
-#include <stdlib.h>
-#include <util/delay.h>
-#include <avr/interrupt.h>
-#endif
-
-#include "Serial.h"
-
-#include "checksum.h"
-#include "ENC_Ethernet.h"
-#include "TCP.h"
-#include "IP.h"
-#include "ARP.h"
-#include "UDP.h"
-
-//todo:暫定
-#define heartbit_LED_DATA		(0)
-#define heartbit_LED_PORT		(0)
-#define heartbit_LED			(0)
-#define Connection_LED_DATA		(0)
-#define Connection_LED_PORT		(0)
-#define Connection_LED			(0)
-#define Settings_LED_DATA		(0)
-#define Settings_LED_PORT		(0)
-#define Settings_LED			(0)
-#define Settings_switch_DATA	(0)
-#define Settings_switch_PORT	(0)
-#define Settings_switch_PIN		(0)
-#define Settings_switch			(0)
-
-//todo:暫定
-#define TCCR1B	(0)
-#define CS10	(0)
-#define CS12	(0)
-#define WGM12	(0)
-#define OCR1A	(0)
-#define TIMSK	(0)
-#define OCIE1B	(0)
-#define EICRB	(0)
-#define ISC61	(0)
-#define ISC60	(0)
-#define EIMSK	(0)
-#define INT6	(0)
-#define UDR1	(0)
-#define UCSR1A	(0)
-#define UDRE1	(0)
-#define UCSR1B	(0)
-#define RXCIE1	(0)
-#define RXC1	(0)
-
-////////////////////////////////	Command For The Module	//////////////////////////////////////////
-
-#define MAC_Change		0x10
-#define IP_Change		0x20
-#define PORT_Change		0x30
-#define Module_Restart	0x40
-
-static char ENC_Data[500];
-static char Serial_Data[500];
-static uint16_t Packet_length, Core_Packet =0x00;
-static uint16_t Outgoing_byte_count = 0x00;
-static bool Auto_Send = true;
-static bool pre_connection = false;
-
-static void TIMER1_COMPB_vect();
-static void INT6_vect();
-static void change_settings(bool Method);		// Method = True for Serial, False for UDP
-static void USART1_RX_vect();
-
-int main()
-{
-	heartbit_LED_DATA |= (1<<heartbit_LED);
-	Connection_LED_DATA |= (1<<Connection_LED);
-	Settings_LED_DATA |= (1<< Settings_LED);	
-	Settings_switch_DATA &=~(1<< Settings_switch);
-	
-	heartbit_LED_PORT |= (1<<heartbit_LED);
-	Connection_LED_PORT |= (1<<Connection_LED);
-	Settings_LED_PORT |= (1<< Settings_LED);
-	Settings_switch_PORT &= ~ (1<< Settings_switch);					// Makes it Low. So that rising can be detected
-	
-	// Heart Beat LED
-	TCCR1B |= 1<<CS10 | 1<<CS12 | 1<<WGM12; // Heart beat LED
-	OCR1A= 14000;  // 10 millisecond interval.
-	TIMSK |= 1<< OCIE1B;    //	Channel 1, Heart beat LED Enabled.
-	
-	if ((eeprom_read_byte(0x00)==0xFF)|(eeprom_read_byte(0x00)==0x00))		// First time. Write default
-	{
-		for ( char x=0;x<6;x++)				// MAC Write
-		{
-			eeprom_write_byte(( uint8_t *)x,MAC[x]);
-		}
-		
-		for (char x=0;x<4;x++)				// IP Write
-		{
-			eeprom_write_byte(( uint8_t *)(6+x),My_IP[x]);
-		}
-	} 
-	else									// Load from EEPROM
-	{
-		for ( uint8_t x=0;x<6;x++)				// MAC Read
-		{
-			MAC[x] = eeprom_read_byte(( uint8_t *)x);
-		}
-		for (uint8_t x=0;x<4;x++)				// IP Read
-		{
-			My_IP[x] = eeprom_read_byte(( uint8_t *)6+ x);
-		}
-	}
-	ENC_MasterInit();
-	ENC_init();
-	serial_init();
-	
-	// Interrupt on IN6 for EMU input
-	EICRB |= 1<<ISC61 | 1<<ISC60;		// Rising edge
-	EIMSK |= 1<<INT6;				// Enable INT6
-	sei();
-	while (1)
-	{
-		while (NewPacket()>0x00)
-			{
-			// Read the frame
-			Packet_length = ENC_Receive(ENC_Data);	
-			Core_Packet = Packet_length;
-			// Check if ARP			
-			char IsARP=ARP_check(ENC_Data);  // Auto reply ARP		
-			if (IsARP=='O')		// Other. But for me.
-				{
-				// Check if TCP
-				Packet_length=TCP_check(ENC_Data,Packet_length);	// Handles sending ACK and SYN+ACK 								
-				if (Packet_length>0)
-				{
-					//Make_TCP_Packet(ENC_Data,Packet_length,false,true,true);
-					for (uint16_t x=0;x<Packet_length;x++)
-					{
-						UDR1= ENC_Data[x];
-						while( !( UCSR1A & (1<<UDRE1)) );
-						
-					}
-					Packet_length=0;
-				}
-				else
-				{
-					
-				Packet_length = UDP_check(ENC_Data,Core_Packet);
-				
-				if (Packet_length>8)
-				{
-					for (char x=0;x<20;x++)
-					{
-						Serial_Data[x]= ENC_Data[x];
-					}
-					change_settings(false);
-				}
-				Packet_length=0;
-										
-				}
-				
-			}
-			
-			if (pre_connection != connected)
-			{
-				if (connected==true)
-				{
-					OCR1A= 2800;
-					Outgoing_byte_count=0;
-					USART_Flush(true);
-					UCSR1B |= (1 << RXCIE1 );			// Turn on Interrupt
-					Connection_LED_PORT &=~(1<< Connection_LED);
-				}
-				else
-				{
-					OCR1A= 14000;
-					Outgoing_byte_count=0;
-					USART_Flush(true);
-					UCSR1B &= ~(1 << RXCIE1 );			// Turn on Interrupt
-					Connection_LED_PORT |= (1<< Connection_LED);
-				}
-			}
-			pre_connection= connected;
-			
-		}
-	}
-
+// function called if new tcp client is connecting into AVR, it is like firewall,
+unsigned char TcpOnNewConnection(const unsigned char connectionId){
+ // this example is only client communication, every incoming tcp connection is droped (all clients try connect into AVR will timeout)
+ return NET_HANDLE_RESULT_DROP;
 }
 
-static void TIMER1_COMPB_vect()
-{
-	heartbit_LED_PORT ^=(1<<heartbit_LED);
-	if ((Outgoing_byte_count>0)& (connected==true))
-	{
-		Make_TCP_Packet(Serial_Data,Outgoing_byte_count,false,true,true);
-		Outgoing_byte_count=0;
-	}
+// function called after successful established any connection
+void TcpOnConnect(const unsigned char connectionId){
+ // we use only synchronous client communication in this example this function can be empty
+ // successfull connect will by detected by TcpConnect function
 }
 
-static void INT6_vect()
-{
-	cli();				// Turn off Interrupt
-	
-	Settings_LED_PORT &= ~(1<<Settings_LED);	// Indicator of settings change
-	
-	Outgoing_byte_count=0;
-	while (Settings_switch_PIN & (1<< Settings_switch))
-	{
-		while( !( UCSR1A & (1<<RXC1)) );		// Wait until comes
-		Serial_Data[Outgoing_byte_count]= UDR1;	// Shove it into the Buffer
-		Outgoing_byte_count++;
-	}
-	change_settings(true);
-	Outgoing_byte_count=0;
-	
-	Settings_LED_PORT |= (1<<Settings_LED);		// Indicator of change finish.
-	
-	sei();				// Turn on Interrupt
+// function called always if AVR receive any data from any connection
+void TcpOnIncomingData(const unsigned char connectionId, const unsigned char *data, unsigned short dataLength){
+ // we use only synchronous client communication in this example this function can be empty
+ // every data in this example will be readed synchronously by TcpReceiveData function
 }
 
-
-static void change_settings(bool Method)
-{
-	if (Serial_Data[1]== MAC_Change)
-	{
-		Settings_LED_PORT &= ~(1<<Settings_LED);
-		
-		// send "OK"  Ack sending 1st, because after changing, It won't communicate.
-		if (Method==true)			// Serial
-		{
-			UDR1= MAC_Change;
-			while( !( UCSR1A & (1<<UDRE1)) );
-			_delay_ms(20);
-		}
-		else
-		{
-			UDP_send("Changed MAC",11,10);
-		}
-		
-		for (char x=0;x<6;x++)
-		{
-			MAC[x]= ENC_Data[2+x];
-		}
-		
-		for (uint8_t x=0;x<6;x++)				// MAC Write
-		{
-			eeprom_write_byte(( uint8_t *)x,MAC[x]);
-		}
-		
-		ENC_init();
-		
-		Settings_LED_PORT |= (1<<Settings_LED);
-		
-	}
-	else if (Serial_Data[1]== IP_Change)
-	{
-		
-		Settings_LED_PORT &= ~(1<<Settings_LED);
-		
-		// send "OK"  Ack sending 1st, because after changing, It won't communicate.
-		if (Method==true)			// Serial
-		{
-			UDR1= IP_Change;
-			while( !( UCSR1A & (1<<UDRE1)) );
-			_delay_ms(20);
-		}
-		else
-		{
-			UDP_send("Changed IP",10,10);
-		}
-		
-		for (char x=0;x<4;x++)
-		{
-			My_IP[x]= ENC_Data[2+x];
-		}
-		
-		
-		for (uint8_t x=0;x<4;x++)				// IP Write
-		{
-			eeprom_write_byte((( uint8_t *)6+x),My_IP[x]);
-		}
-		
-		Settings_LED_PORT |= (1<<Settings_LED);
-	}
-	
-	else if (Serial_Data[1]== Module_Restart)
-	{
-		
-		Settings_LED_PORT &= ~(1<<Settings_LED);
-		// send "OK"
-		if (Method==true)			// Serial
-		{
-			UDR1= Module_Restart;
-			while( !( UCSR1A & (1<<UDRE1)) );
-			_delay_ms(20);
-		}
-		else
-		{
-			UDP_send("Module is restarted",19,10);
-		}
-		ENC_init();
-		Settings_LED_PORT |= (1<<Settings_LED);
-	}
-	
-	else
-	{	
-		Settings_LED_PORT &= ~(1<<Settings_LED);
-		
-		// send "??"
-		if (Method==true)			// Serial
-		{
-			UDR1= 0x00;
-			while( !( UCSR1A & (1<<UDRE1)) );
-			_delay_ms(20);
-		}
-		else
-		{
-			UDP_send("Unknown Command",15,10);
-		}
-		Settings_LED_PORT |= (1<<Settings_LED);
-	}
+// function called after closed any connection
+void TcpOnDisconnect(const unsigned char connectionId){
+ // we use only synchronous client communication in this example this function can be empty
+ // this example close connection after every request like HTTP 1.0
 }
 
+void TcpSynchNotPersitentClientExample(){
+ unsigned char serverIp[IP_V4_ADDRESS_SIZE] = {192, 168, 0, 30};
+ // client connect to server host (here example 192.168.0.30) and port 5000 with 6 second timeout
+ unsigned char clientConId = TcpConnect(serverIp, 5000, 6000);
+ // check if connect is success (can fail on timeout or if ip address not fount on local network)
+ if(clientConId == TCP_INVALID_CONNECTION_ID){
+  puts("Tcp connect error");
+  return;
+ }
+ // send request message: "test_message" to server with 5 second timeout on tcp ack
+ if(!TcpSendData(clientConId, 5000, "test_message", strlen("test_message"))){
+  // if sending request data fail we try disconnect tcp connection and log into stdout failed request
+  TcpDisconnect(clientConId, 1000);
+  puts("Send request error");
+  return;
+ }
+ unsigned char *responseData;
+ unsigned short responseDataLength, i;
+ // start loop for receive response on application protocol layer (we need loop until response message ends defined by zero character ASCII 0)
+ for(;;){
+  // synchronous wait for data from tcp connection with timeout 60 seconds
+  if(!TcpReceiveData(clientConId, 60000, &responseData, &responseDataLength)){
+   // if server do not response data before 60 seconds or any error we disconnect established tcp connection and log response error
+   TcpDisconnect(clientConId, 1000);
+   puts("Receive response error");
+   return;
+  }
+  // instantly after receive data process them, because char pointer received in function TcpReceiveData is from network buffer
+  // and if you use another network communication data can be rewritten!
+  for(i=0; i<responseDataLength; i++){
+   // if in response data is zero character ASCII 0 it is end of response message and we end waiting loop
+   if(responseData[i] == 0){
+    goto endLoop;
+   }
+   // if is not end of response message we send message char into stdout
+   // in real application layer save response into application buffer and after read complete response process it
+   putchar(responseData[i]);
+  }
+ }
+ endLoop:
+ // after successfull receive response message we disconnect established connection because clientConId is local variable
+ // and we loose it after function end
+ TcpDisconnect(clientConId, 5000);
+ putchar('\n');
+}
 
-static void USART1_RX_vect()
-{
-	TIMSK &= ~(1<< OCIE1B);
-	
-	if (Outgoing_byte_count<500 & ((UCSR1A & (1<<RXC1))>0))
-	{
-		Serial_Data[Outgoing_byte_count] = UDR1;
-		Outgoing_byte_count++;
-	}
-	
-	TIMSK |= (1<< OCIE1B);
+int main(){
+ // init network library
+ NetInit();
+ for(;;){
+  // handle incoming packet in application
+  NetHandleNetwork();
+  // every 1 second is called example request, here is delay only for simple example in real application use timers!
+  // main loop have to always run for fast handling network connections
+  TcpSynchNotPersitentClientExample();
+  _delay_ms(1000);
+ }
 }

@@ -1,0 +1,114 @@
+gcc ./src/ARP.c -E -MM -w  -I../Pub -I../Pub/apl -I../Pub/common -I../Pub/drv -I../Pub/hsm -I../Pub/mid -I../Pub/mid/model -I../Pub/modelDefine -I../Pub/os -I../Pub/task -I../Pub/Test -I../Pub/Utl -I./include > DefaultBuild/ARP.d       
+ccrx    ./src/ARP.c -isa=rxv1 -fpu -auto_enum -output=obj -obj_path=DefaultBuild -debug -optimize=0 -volatile -nologo -utf8  -include=../Pub -include=../Pub/apl -include=../Pub/common -include=../Pub/drv -include=../Pub/hsm -include=../Pub/mid -include=../Pub/mid/model -include=../Pub/modelDefine -include=../Pub/os -include=../Pub/task -include=../Pub/Test -include=../Pub/Utl -include=./include 2>&1 | tee DefaultBuild/ARP_Compile.log
+gcc ./src/checksum.c -E -MM -w  -I../Pub -I../Pub/apl -I../Pub/common -I../Pub/drv -I../Pub/hsm -I../Pub/mid -I../Pub/mid/model -I../Pub/modelDefine -I../Pub/os -I../Pub/task -I../Pub/Test -I../Pub/Utl -I./include > DefaultBuild/checksum.d       
+ccrx    ./src/checksum.c -isa=rxv1 -fpu -auto_enum -output=obj -obj_path=DefaultBuild -debug -optimize=0 -volatile -nologo -utf8  -include=../Pub -include=../Pub/apl -include=../Pub/common -include=../Pub/drv -include=../Pub/hsm -include=../Pub/mid -include=../Pub/mid/model -include=../Pub/modelDefine -include=../Pub/os -include=../Pub/task -include=../Pub/Test -include=../Pub/Utl -include=./include 2>&1 | tee DefaultBuild/checksum_Compile.log
+gcc ./src/ENC_Ethernet.c -E -MM -w  -I../Pub -I../Pub/apl -I../Pub/common -I../Pub/drv -I../Pub/hsm -I../Pub/mid -I../Pub/mid/model -I../Pub/modelDefine -I../Pub/os -I../Pub/task -I../Pub/Test -I../Pub/Utl -I./include > DefaultBuild/ENC_Ethernet.d       
+ccrx    ./src/ENC_Ethernet.c -isa=rxv1 -fpu -auto_enum -output=obj -obj_path=DefaultBuild -debug -optimize=0 -volatile -nologo -utf8  -include=../Pub -include=../Pub/apl -include=../Pub/common -include=../Pub/drv -include=../Pub/hsm -include=../Pub/mid -include=../Pub/mid/model -include=../Pub/modelDefine -include=../Pub/os -include=../Pub/task -include=../Pub/Test -include=../Pub/Utl -include=./include 2>&1 | tee DefaultBuild/ENC_Ethernet_Compile.log
+./src/ENC_Ethernet.c(180):W0520177:Function "ENC_Write_and_Read_dummy" was declared but never referenced
+./src/ENC_Ethernet.c(274):W0520177:Function "PHY_read" was declared but never referenced
+gcc ./src/IP.c -E -MM -w  -I../Pub -I../Pub/apl -I../Pub/common -I../Pub/drv -I../Pub/hsm -I../Pub/mid -I../Pub/mid/model -I../Pub/modelDefine -I../Pub/os -I../Pub/task -I../Pub/Test -I../Pub/Utl -I./include > DefaultBuild/IP.d       
+ccrx    ./src/IP.c -isa=rxv1 -fpu -auto_enum -output=obj -obj_path=DefaultBuild -debug -optimize=0 -volatile -nologo -utf8  -include=../Pub -include=../Pub/apl -include=../Pub/common -include=../Pub/drv -include=../Pub/hsm -include=../Pub/mid -include=../Pub/mid/model -include=../Pub/modelDefine -include=../Pub/os -include=../Pub/task -include=../Pub/Test -include=../Pub/Utl -include=./include 2>&1 | tee DefaultBuild/IP_Compile.log
+gcc ./src/main.c -E -MM -w  -I../Pub -I../Pub/apl -I../Pub/common -I../Pub/drv -I../Pub/hsm -I../Pub/mid -I../Pub/mid/model -I../Pub/modelDefine -I../Pub/os -I../Pub/task -I../Pub/Test -I../Pub/Utl -I./include > DefaultBuild/main.d       
+ccrx    ./src/main.c -isa=rxv1 -fpu -auto_enum -output=obj -obj_path=DefaultBuild -debug -optimize=0 -volatile -nologo -utf8  -include=../Pub -include=../Pub/apl -include=../Pub/common -include=../Pub/drv -include=../Pub/hsm -include=../Pub/mid -include=../Pub/mid/model -include=../Pub/modelDefine -include=../Pub/os -include=../Pub/task -include=../Pub/Test -include=../Pub/Utl -include=./include 2>&1 | tee DefaultBuild/main_Compile.log
+./include/Serial.h(48):E0520020:Identifier "UCSR0B" is undefined
+./include/Serial.h(48):E0520020:Identifier "RXEN0" is undefined
+./include/Serial.h(48):E0520020:Identifier "TXEN0" is undefined
+./include/Serial.h(49):E0520020:Identifier "UCSR0C" is undefined
+./include/Serial.h(49):E0520020:Identifier "UCSZ00" is undefined
+./include/Serial.h(49):E0520020:Identifier "UCSZ01" is undefined
+./include/Serial.h(50):E0520020:Identifier "UBRR0H" is undefined
+./include/Serial.h(51):E0520020:Identifier "UBRR0L" is undefined
+./include/Serial.h(52):E0520020:Identifier "RXCIE0" is undefined
+./include/Serial.h(58):E0520020:Identifier "UCSR1B" is undefined
+./include/Serial.h(58):E0520020:Identifier "RXEN1" is undefined
+./include/Serial.h(58):E0520020:Identifier "TXEN1" is undefined
+./include/Serial.h(59):E0520020:Identifier "UCSR1C" is undefined
+./include/Serial.h(59):E0520020:Identifier "UCSZ10" is undefined
+./include/Serial.h(59):E0520020:Identifier "UCSZ11" is undefined
+./include/Serial.h(60):E0520020:Identifier "UBRR1H" is undefined
+./include/Serial.h(61):E0520020:Identifier "UBRR1L" is undefined
+./include/Serial.h(74):E0520020:Identifier "UCSR1A" is undefined
+./include/Serial.h(74):E0520020:Identifier "RXC1" is undefined
+./include/Serial.h(74):E0520020:Identifier "UDR1" is undefined
+./include/Serial.h(78):E0520020:Identifier "UCSR0A" is undefined
+./include/Serial.h(78):E0520020:Identifier "RXC0" is undefined
+./include/Serial.h(78):E0520020:Identifier "UDR0" is undefined
+./include/Serial.h(69):W0520550:Variable "dummy" was set but never used
+./src/main.c(91):E0520137:Expression must be a modifiable lvalue
+./src/main.c(92):E0520137:Expression must be a modifiable lvalue
+./src/main.c(93):E0520137:Expression must be a modifiable lvalue
+./src/main.c(94):E0520137:Expression must be a modifiable lvalue
+./src/main.c(96):E0520137:Expression must be a modifiable lvalue
+./src/main.c(97):E0520137:Expression must be a modifiable lvalue
+./src/main.c(98):E0520137:Expression must be a modifiable lvalue
+./src/main.c(99):E0520137:Expression must be a modifiable lvalue
+./src/main.c(102):E0520137:Expression must be a modifiable lvalue
+./src/main.c(103):E0520137:Expression must be a modifiable lvalue
+./src/main.c(104):E0520137:Expression must be a modifiable lvalue
+./src/main.c(108):E0520029:Expected an expression
+./src/main.c(108):E0520020:Identifier "x" is undefined
+./src/main.c(113):E0520029:Expected an expression
+./src/main.c(120):E0520254:Type name is not allowed
+./src/main.c(120):E0520065:Expected a ";"
+./src/main.c(120):E0520020:Identifier "x" is undefined
+./src/main.c(124):E0520254:Type name is not allowed
+./src/main.c(124):E0520065:Expected a ";"
+./src/main.c(134):E0520137:Expression must be a modifiable lvalue
+./src/main.c(135):E0520137:Expression must be a modifiable lvalue
+./src/main.c(145):E0520268:Declaration may not appear after executable statement in block
+./src/main.c(153):E0520254:Type name is not allowed
+./src/main.c(153):E0520065:Expected a ";"
+./src/main.c(153):E0520020:Identifier "x" is undefined
+./src/main.c(155):E0520137:Expression must be a modifiable lvalue
+./src/main.c(168):E0520029:Expected an expression
+./src/main.c(168):E0520020:Identifier "x" is undefined
+./src/main.c(184):E0520137:Expression must be a modifiable lvalue
+./src/main.c(187):E0520137:Expression must be a modifiable lvalue
+./src/main.c(188):E0520137:Expression must be a modifiable lvalue
+./src/main.c(192):E0520137:Expression must be a modifiable lvalue
+./src/main.c(195):E0520137:Expression must be a modifiable lvalue
+./src/main.c(196):E0520137:Expression must be a modifiable lvalue
+./src/main.c(208):E0520137:Expression must be a modifiable lvalue
+./src/main.c(220):E0520137:Expression must be a modifiable lvalue
+./src/main.c(232):E0520137:Expression must be a modifiable lvalue
+./src/main.c(242):E0520137:Expression must be a modifiable lvalue
+./src/main.c(247):E0520137:Expression must be a modifiable lvalue
+./src/main.c(253):W0520140:Too many arguments in function call
+./src/main.c(256):E0520029:Expected an expression
+./src/main.c(256):E0520020:Identifier "x" is undefined
+./src/main.c(261):E0520254:Type name is not allowed
+./src/main.c(261):E0520065:Expected a ";"
+./src/main.c(268):E0520137:Expression must be a modifiable lvalue
+./src/main.c(274):E0520137:Expression must be a modifiable lvalue
+./src/main.c(279):E0520137:Expression must be a modifiable lvalue
+./src/main.c(285):W0520140:Too many arguments in function call
+./src/main.c(288):E0520029:Expected an expression
+./src/main.c(288):E0520020:Identifier "x" is undefined
+./src/main.c(294):E0520254:Type name is not allowed
+./src/main.c(294):E0520065:Expected a ";"
+./src/main.c(299):E0520137:Expression must be a modifiable lvalue
+./src/main.c(305):E0520137:Expression must be a modifiable lvalue
+./src/main.c(309):E0520137:Expression must be a modifiable lvalue
+./src/main.c(315):W0520140:Too many arguments in function call
+./src/main.c(318):E0520137:Expression must be a modifiable lvalue
+./src/main.c(323):E0520137:Expression must be a modifiable lvalue
+./src/main.c(328):E0520137:Expression must be a modifiable lvalue
+./src/main.c(334):W0520140:Too many arguments in function call
+./src/main.c(336):E0520137:Expression must be a modifiable lvalue
+./src/main.c(343):E0520137:Expression must be a modifiable lvalue
+./src/main.c(351):E0520137:Expression must be a modifiable lvalue
+./src/main.c(81):W0520177:Variable "Auto_Send" was declared but never referenced
+./src/main.c(206):W0520177:Function "TIMER1_COMPB_vect" was declared but never referenced
+./src/main.c(216):W0520177:Function "INT6_vect" was declared but never referenced
+./src/main.c(341):W0520177:Function "USART1_RX_vect" was declared but never referenced
+gcc ./src/TCP.c -E -MM -w  -I../Pub -I../Pub/apl -I../Pub/common -I../Pub/drv -I../Pub/hsm -I../Pub/mid -I../Pub/mid/model -I../Pub/modelDefine -I../Pub/os -I../Pub/task -I../Pub/Test -I../Pub/Utl -I./include > DefaultBuild/TCP.d       
+ccrx    ./src/TCP.c -isa=rxv1 -fpu -auto_enum -output=obj -obj_path=DefaultBuild -debug -optimize=0 -volatile -nologo -utf8  -include=../Pub -include=../Pub/apl -include=../Pub/common -include=../Pub/drv -include=../Pub/hsm -include=../Pub/mid -include=../Pub/mid/model -include=../Pub/modelDefine -include=../Pub/os -include=../Pub/task -include=../Pub/Test -include=../Pub/Utl -include=./include 2>&1 | tee DefaultBuild/TCP_Compile.log
+./src/TCP.c(26):W0520550:Variable "ACK_length" was set but never used
+gcc ./src/UDP.c -E -MM -w  -I../Pub -I../Pub/apl -I../Pub/common -I../Pub/drv -I../Pub/hsm -I../Pub/mid -I../Pub/mid/model -I../Pub/modelDefine -I../Pub/os -I../Pub/task -I../Pub/Test -I../Pub/Utl -I./include > DefaultBuild/UDP.d       
+ccrx    ./src/UDP.c -isa=rxv1 -fpu -auto_enum -output=obj -obj_path=DefaultBuild -debug -optimize=0 -volatile -nologo -utf8  -include=../Pub -include=../Pub/apl -include=../Pub/common -include=../Pub/drv -include=../Pub/hsm -include=../Pub/mid -include=../Pub/mid/model -include=../Pub/modelDefine -include=../Pub/os -include=../Pub/task -include=../Pub/Test -include=../Pub/Utl -include=./include 2>&1 | tee DefaultBuild/UDP_Compile.log
+rlink  -noprelink -form=library=u -output=../lib/ENC28J60onRX.lib -list=../lib/ENC28J60onRX.lbp -nologo DefaultBuild/ARP.obj DefaultBuild/checksum.obj DefaultBuild/ENC_Ethernet.obj DefaultBuild/IP.obj DefaultBuild/main.obj DefaultBuild/TCP.obj DefaultBuild/UDP.obj
+
+F0563300:Cannot open file : "DefaultBuild\main.obj"
+
+Renesas Optimizing Linker Abort
+make[1]: *** [/cygdrive/c/Users/Akinori/workspace/ENC28J60/ENC/common.mk:90: ../lib/ENC28J60onRX.lib] エラー 1
