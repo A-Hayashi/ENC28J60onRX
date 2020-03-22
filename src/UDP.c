@@ -52,10 +52,15 @@
 // +                                           Data :::                                            +
 // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 //
-
 extern unsigned short connectPortRotaiting;
 
-//********************************************************************************************
+static void UdpGenerateHeader(unsigned char *buffer, const unsigned short sourcePort, const unsigned short destPort, const unsigned short length);
+static unsigned short UdpSendDataMac(const unsigned char* mac, const unsigned char *ip, const unsigned short remotePort, const unsigned short port, const unsigned char *data, const unsigned short dataLength);
+static unsigned short UdpSendData(const unsigned char ip[IP_V4_ADDRESS_SIZE], const unsigned short remotePort, const unsigned short port, const unsigned char *data, const unsigned short dataLength);
+static unsigned short UdpSendDataTmpPort(const unsigned char *ip, const unsigned short remotePort, const unsigned char *data, const unsigned short dataLength);
+static unsigned char UdpReceiveData(const unsigned char *ip, const unsigned short remotePort, const unsigned port, unsigned short timeout, unsigned char **data, unsigned short *dataLength);
+
+	//********************************************************************************************
 //
 // Function : udp_generate_header
 // Argument : BYTE *rxtx_buffer is a pointer point to UDP tx buffer
@@ -89,7 +94,7 @@ static void UdpGenerateHeader(unsigned char *buffer, const unsigned short source
 // Description : send upd data into network
 //
 //********************************************************************************************
-unsigned short UdpSendDataMac(const unsigned char* mac, const unsigned char *ip, const unsigned short remotePort, const unsigned short port, const unsigned char *data, const unsigned short dataLength){
+static unsigned short UdpSendDataMac(const unsigned char* mac, const unsigned char *ip, const unsigned short remotePort, const unsigned short port, const unsigned char *data, const unsigned short dataLength){
  unsigned char *buffer;
  if(dataLength + ETH_HEADER_LEN + IP_HEADER_LEN + UDP_HEADER_LEN + dataLength > MAX_TX_BUFFER){
   return 0;
@@ -110,7 +115,7 @@ unsigned short UdpSendDataMac(const unsigned char* mac, const unsigned char *ip,
 // Description : send upd data into network (function lookup mac address for ip)
 //
 //********************************************************************************************
-unsigned short UdpSendData(const unsigned char ip[IP_V4_ADDRESS_SIZE], const unsigned short remotePort, const unsigned short port, const unsigned char *data, const unsigned short dataLength){
+static unsigned short UdpSendData(const unsigned char ip[IP_V4_ADDRESS_SIZE], const unsigned short remotePort, const unsigned short port, const unsigned char *data, const unsigned short dataLength){
  unsigned char mac[MAC_ADDRESS_SIZE], *buffer = NetGetBuffer();
  if(!ArpWhoIs(buffer, ip, mac)){
   return 0;
@@ -126,7 +131,7 @@ unsigned short UdpSendData(const unsigned char ip[IP_V4_ADDRESS_SIZE], const uns
 //               function return temporary port for synchronous wait for response data
 //
 //********************************************************************************************
-unsigned short UdpSendDataTmpPort(const unsigned char *ip, const unsigned short remotePort, const unsigned char *data, const unsigned short dataLength){
+static unsigned short UdpSendDataTmpPort(const unsigned char *ip, const unsigned short remotePort, const unsigned char *data, const unsigned short dataLength){
  unsigned char *buffer = NetGetBuffer();
  connectPortRotaiting = (connectPortRotaiting == NET_MAX_PORT) ? NET_MIN_DINAMIC_PORT : connectPortRotaiting + 1;
  return UdpSendData(ip, remotePort, connectPortRotaiting, data, dataLength);
@@ -138,7 +143,7 @@ unsigned short UdpSendDataTmpPort(const unsigned char *ip, const unsigned short 
 // Description : synchronous wait for any udp data form given remote source
 //
 //********************************************************************************************
-unsigned char UdpReceiveData(const unsigned char *ip, const unsigned short remotePort, const unsigned port, unsigned short timeout, unsigned char **data, unsigned short *dataLength){
+static unsigned char UdpReceiveData(const unsigned char *ip, const unsigned short remotePort, const unsigned port, unsigned short timeout, unsigned char **data, unsigned short *dataLength){
  unsigned short length, waiting = 0;
  unsigned char *buffer = NetGetBuffer();
  for(;;){
