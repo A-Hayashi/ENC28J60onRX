@@ -16,6 +16,8 @@ typedef unsigned long uint32_t;
 #define true	(1)
 #define false	(0)
 
+#define STATIC_ASSERT(expr) { char static_assertion_failed[(expr) ? 1 : 0]; }
+
 //todo:暫定
 #define _delay_ms(x)
 
