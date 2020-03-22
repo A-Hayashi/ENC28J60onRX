@@ -1,6 +1,9 @@
 #ifndef ARP_H_
 #define ARP_H_
 
+#include "common.h"
+#include "ENC_Ethernet.h"
+
 
 /*
  * ARP.h

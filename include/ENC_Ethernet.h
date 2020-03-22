@@ -23,7 +23,6 @@ Needs the following libraries to work properly:
 #include "hd44780.c"
 
 */
-#include "common.h"
 
 void ENC_MasterInit(void);
 void ENC_init();

@@ -1,3 +1,6 @@
+#ifndef CHECKSUM_H_
+#define CHECKSUM_H_
+
 /*
  * checksum.h
  *
@@ -5,9 +8,8 @@
  *  Author: ASUS
  */ 
 
+#include "common.h"
 
-#ifndef CHECKSUM_H_
-#define CHECKSUM_H_
 
 // Must Give even number of data points.
 uint16_t checksum(char data[],uint16_t start_pos, uint16_t end_pos);

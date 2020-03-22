@@ -17,12 +17,13 @@ Data to be sent --->> TCP format data --->> Payload of IP Packet --->> Payload o
 
 */
 
-#include "checksum.h"
 #include "common.h"
+#include "checksum.h"
+#include "ENC_Ethernet.h"
 
 int TCP_check(char data[], int length);
 void Make_TCP_Packet(char raw_data[], int data_length, bool SYN, bool ACK, bool psh);
 
-extern bool connected = false;
+extern bool connected;
 
 #endif

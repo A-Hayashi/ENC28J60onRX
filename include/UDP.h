@@ -9,6 +9,9 @@
 #ifndef UDP_H_
 #define UDP_H_
 
+#include "common.h"
+#include "ENC_Ethernet.h"
+
 int UDP_check(char data[], int length);
 //	Returns the length of necessary data in the UDP packet. If the packet is not valid, returns 0
 //	rewrite the data[] array with only the main data beneath the UDP packet.

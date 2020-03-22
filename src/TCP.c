@@ -44,18 +44,20 @@ int TCP_check(char data[], int length)
 		
 		data_length = (   (((data[16]<<8) & 0xFF00) | data[17] ) - ((data[14] & 0x0F)*4) - (( (data[46]>>4) & 0x0F)*4)  ) ; 
 			
-		if (((data[47] & 0b00000010)>0)& (connected==false))				// check SYN
+		if (((data[47] & 0x20)>0)& (connected==false))				// check SYN
 		{
+			char x;
+
 			Next_Ack = ((data[38] * 16777216UL ) + (data[39] * 65536UL) + (data[40] * 256UL ) + data[41] + 1 ) ;
 			// Destination IP set
-			for(char x =0;x<4;x++)
+			for(x =0;x<4;x++)
 			{
 				Dest_IP[x]=data[26+x];
 			}
 			 
 			// Destination MAC set
 			
-			for(char x =0;x<6;x++)
+			for(x =0;x<6;x++)
 			{
 				Remote_mac[x]=data[6+x];
 			}
@@ -65,7 +67,7 @@ int TCP_check(char data[], int length)
 			connected= true;
 		}
 		
-		else if (((data[47] & 0b00000100)>0) | ((data[47] & 0b00000001)>0))				// check FIN and RST
+		else if (((data[47] & 0x40)>0) | ((data[47] & 0x01)>0))				// check FIN and RST
 		{
 			Next_Ack = ((data[38] * 16777216UL ) + (data[39] * 65536UL) + (data[40] * 256UL ) + data[41] + 1 ) ;
 			Make_TCP_Packet("",0, false,true, false);
@@ -77,12 +79,14 @@ int TCP_check(char data[], int length)
 		}
 		else if((data_length>0) & (connected==true))				//	This part will forward Data to the upper layer
 		{
+			uint16_t X;
+
 			if (((data[38] * 16777216UL ) + (data[39] * 65536UL) + (data[40] * 256UL ) + data[41] )> last_data_seq_num)		// Detect if not retransmission. If not retransmission, forward data and increase Ack.
 			{
 				Next_Ack+=data_length;
 				last_data_seq_num=((data[38] * 16777216UL ) + (data[39] * 65536UL) + (data[40] * 256UL ) + data[41]);
 				
-				for (uint16_t X = 0;X<data_length;X++)			// Extract Data-Only
+				for (X = 0;X<data_length;X++)			// Extract Data-Only
 				{
 					data[X] = data[length-data_length + X];
 				}
@@ -102,12 +106,11 @@ int TCP_check(char data[], int length)
 
 void Make_TCP_Packet(char raw_data[], int data_length, bool SYN, bool ACK, bool psh)
 {
-	
 	char TCP_packet[600];
 	uint16_t checksum_value;
+	bool is_OK = false;
 
 	//	IP header starts
-	
 	TCP_packet[0]= 0x45;
 	TCP_packet[1]= 0x00;
 	
@@ -191,88 +194,92 @@ void Make_TCP_Packet(char raw_data[], int data_length, bool SYN, bool ACK, bool 
 	TCP_packet[38]= 0x00;
 	TCP_packet[39]= 0x00;
 	
-	for (int x = 0;x<data_length;x++)
 	{
-		TCP_packet[40+x] = raw_data[x];
+		int x;
+
+		for (x = 0;x<data_length;x++)
+		{
+			TCP_packet[40+x] = raw_data[x];
+		}
 	}
-	
 	
 	//	Checksum part Starts
-	
-	char TCP_checksum[1500];
-	
-	// Pseudo header
-	TCP_checksum[0]=My_IP[0];
-	TCP_checksum[1]=My_IP[1];
-	TCP_checksum[2]=My_IP[2];
-	TCP_checksum[3]=My_IP[3];
-	TCP_checksum[4]=Dest_IP[0];
-	TCP_checksum[5]=Dest_IP[1];
-	TCP_checksum[6]=Dest_IP[2];
-	TCP_checksum[7]=Dest_IP[3];
-	TCP_checksum[8]=0x00;
-	TCP_checksum[9]=0x06;
-	TCP_checksum[10]= (((data_length+20)>>8)& 0xFF);
-	TCP_checksum[11]= ((data_length+20) & 0xFF);
+	{
+		char TCP_checksum[1500];
+		uint16_t data;
 
-	
-	//	TCP Header & Data
- 	for (uint16_t data=0;data<(20+data_length);data++)
- 	{ 		
-		TCP_checksum[12 + data]= TCP_packet[data+20];
+		// Pseudo header
+		TCP_checksum[0]=My_IP[0];
+		TCP_checksum[1]=My_IP[1];
+		TCP_checksum[2]=My_IP[2];
+		TCP_checksum[3]=My_IP[3];
+		TCP_checksum[4]=Dest_IP[0];
+		TCP_checksum[5]=Dest_IP[1];
+		TCP_checksum[6]=Dest_IP[2];
+		TCP_checksum[7]=Dest_IP[3];
+		TCP_checksum[8]=0x00;
+		TCP_checksum[9]=0x06;
+		TCP_checksum[10]= (((data_length+20)>>8)& 0xFF);
+		TCP_checksum[11]= ((data_length+20) & 0xFF);
+
+		//	TCP Header & Data
+		for (data=0;data<(20+data_length);data++)
+		{
+			TCP_checksum[12 + data]= TCP_packet[data+20];
+		}
+
+		//	TCP_checksum
+		checksum_value= checksum(TCP_checksum,0,(data_length + 12 + 20-1 ));
 	}
-	
-	
-	//	TCP_checksum
-	checksum_value= checksum(TCP_checksum,0,(data_length + 12 + 20-1 ));
 	
 	TCP_packet[36]= ((checksum_value>>8) & 0xFF);
 	TCP_packet[37]= (checksum_value & 0xFF);
-	
 	//	Checksum part End
-	bool is_OK = false;
+
 	while(is_OK==false)
 	{
 		is_OK = ENC_Transmit(TCP_packet, (data_length+40) ,'I');
 	}
+
 	// ACK checking and retransmitting
-	
-	bool Got_ACK = false;
-	char retransmit = 0x01;
-	if (!((ACK==true)&&(SYN==false)&&(psh==false)))
 	{
-		while (Got_ACK==false)
+		bool Got_ACK = false;
+		char retransmit = 0x01;
+		if (!((ACK==true)&&(SYN==false)&&(psh==false)))
 		{
-			if (retransmit>0x0A)
+			while (Got_ACK==false)
 			{
-				connected = false;
-				break;
-			}
-			_delay_ms(2);
-			while ((NewPacket()>0))
-			{
-				ACK_length = ENC_Receive(ACK_Data);
-				if ((ACK_Data[12]==0x08)&&(ACK_Data[13]==0x00)&&(ACK_Data[23]==0x06)&&(ACK_Data[30]==My_IP[0])&&(ACK_Data[31]==My_IP[1])&&(ACK_Data[32]==My_IP[2])&&(ACK_Data[33]==My_IP[3])&&((ACK_Data[47] & 0b00010000)>0))
+				if (retransmit>0x0A)
 				{
-					Got_ACK=true;
-					if (((ACK_Data[47] & 0b00000100)>0) | ((ACK_Data[47] & 0b00000001)>0))
-					{
-						Next_Ack = ((ACK_Data[38] * 16777216UL ) + (ACK_Data[39] * 65536UL) + (ACK_Data[40] * 256UL ) + ACK_Data[41] + 1 ) ;
-						Make_TCP_Packet("",0, false,true, false);
-						connected= false;
-					}
+					connected = false;
 					break;
 				}
-			}
-			if (Got_ACK==false)
-			{
-				is_OK = false;
-				while(is_OK==false)
+				_delay_ms(2);
+				while ((NewPacket()>0))
 				{
-					is_OK = ENC_Transmit(TCP_packet, (data_length+40) ,'I');
+					ACK_length = ENC_Receive(ACK_Data);
+					if ((ACK_Data[12]==0x08)&&(ACK_Data[13]==0x00)&&(ACK_Data[23]==0x06)&&(ACK_Data[30]==My_IP[0])&&(ACK_Data[31]==My_IP[1])&&(ACK_Data[32]==My_IP[2])&&(ACK_Data[33]==My_IP[3])&&((ACK_Data[47] & 0x10)>0))
+					{
+						Got_ACK=true;
+						if (((ACK_Data[47] & 0x40)>0) | ((ACK_Data[47] & 0x01)>0))
+						{
+							Next_Ack = ((ACK_Data[38] * 16777216UL ) + (ACK_Data[39] * 65536UL) + (ACK_Data[40] * 256UL ) + ACK_Data[41] + 1 ) ;
+							Make_TCP_Packet("",0, false,true, false);
+							connected= false;
+						}
+						break;
+					}
 				}
+				if (Got_ACK==false)
+				{
+					is_OK = false;
+					while(is_OK==false)
+					{
+						is_OK = ENC_Transmit(TCP_packet, (data_length+40) ,'I');
+					}
+				}
+				retransmit++;
 			}
-			retransmit++;
 		}
 	}
 	Squnc+=data_length;

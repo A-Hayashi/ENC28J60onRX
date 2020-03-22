@@ -5,6 +5,7 @@
  *  Author: ASUS
  */ 
 
+#include "IP.h"
 
 	
 static char TCP_IP_packet[1600];
@@ -23,6 +24,8 @@ static void Target_IP(char Destination_IP[]);
 
 void Make_IP_packet(char raw_data[], uint16_t data_length, char Destination_IP[],char My_IP[], char protocol, char result[])
 {
+	uint16_t x;
+
 	version_and_header();
 	Type_of_service();
 	Total_length(data_length);
@@ -34,12 +37,12 @@ void Make_IP_packet(char raw_data[], uint16_t data_length, char Destination_IP[]
 	Source_IP(My_IP);
 	Target_IP(Destination_IP);
 	
-	for (uint16_t x = 0;x<data_length;x++)
+	for (x = 0;x<data_length;x++)
 	{
 		TCP_IP_packet[20+x] = raw_data[x];
 	}
 	
-	for (uint16_t x = 0;x<(data_length+20);x++)
+	for (x = 0;x<(data_length+20);x++)
 	{
 		result[x] = TCP_IP_packet[x];
 	}

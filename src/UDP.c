@@ -19,8 +19,10 @@ int UDP_check(char data[], int length)
 	
 	else if ((data[12]==0x08)&&(data[13]==0x00)&&(data[23]==0x11)&&(data[30]==My_IP[0])&&(data[31]==My_IP[1])&&(data[32]==My_IP[2])&&(data[33]==My_IP[3])&&(data[36]== PORTH)&&(data[37]==PORTL))
 	{
+		int x;
+
 		data_length = ((data[38]<<8) | ( 0xFF & data[39])) -8 ;
-		for (int x = 0; x<length;x++)
+		for (x = 0; x<length;x++)
 		{
 			data[x]=data[42+x];
 		}
@@ -35,6 +37,7 @@ bool UDP_send(char data[], uint16_t length, int number)		// Use number = 10
 	uint16_t total_data = length+28;
 	uint16_t checksum_value, x =0x00;
 	char new_data[1600];
+	bool Ans;
 	
 	char data_high, data_low;
 	data_high= (total_data>>8);
@@ -102,6 +105,6 @@ bool UDP_send(char data[], uint16_t length, int number)		// Use number = 10
 	
 	
 	//	Transmit
-	bool Ans = ENC_Transmit(new_data, total_data ,'I');
+	Ans = ENC_Transmit(new_data, total_data ,'I');
 	return Ans;
 }
