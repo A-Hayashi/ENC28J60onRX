@@ -24,16 +24,17 @@ Needs the following libraries to work properly:
 #include "ENC_Ethernet.h"
 
 //todo:暫定
+uint8_t dummy = 0;
+#define PORTB	(dummy)
+#define DDRB	(dummy)
+#define SPDR	(dummy)
+#define SPCR	(dummy)
+
 #define PB0		(0)
-#define PORTB	(0)
-#define SPDR	(0)
 #define SPSR	(0)
 #define SPIF	(0)
-#define DDRB	(0)
 #define DDB2	(0)
 #define DDB1	(0)
-#define ENC_SS	(0)
-#define SPCR	(0)
 #define SPE		(0)
 #define MSTR	(0)
 
@@ -272,9 +273,11 @@ Setting up the following Registers:
 
 static uint16_t PHY_read(char PHY_addr)
 {
+	char past;
+
 	ENC_Double_Write((WCR|ECON1), 0x02);	//	Set bank 2 
 	ENC_Double_Write((WCR|MIREGADR), PHY_addr);
-	char past = ENC_Write_and_Read(RCR|MICMD);
+	past = ENC_Write_and_Read(RCR|MICMD);
 	ENC_Double_Write((WCR|MICMD), (past | 0x01));
 	_delay_us(11);
 	ENC_Double_Write((WCR|ECON1), 0x03);	//	Set bank 3
@@ -295,16 +298,19 @@ static uint16_t PHY_read(char PHY_addr)
 	past = ENC_Write_and_Read(RCR|MICMD);
 	ENC_Double_Write((WCR|MICMD), ~(past & 0x01));
 	
-	//	Read Data
-	char datah = ENC_Write_and_Read(RCR|MIRDH);
-	char datal = ENC_Write_and_Read(RCR|MIRDL);
-	int result = datal+ (8<<datah);
-	return result;
-	
+	{
+		//	Read Data
+		char datah = ENC_Write_and_Read(RCR|MIRDH);
+		char datal = ENC_Write_and_Read(RCR|MIRDL);
+		int result = datal+ (8<<datah);
+		return result;
+	}
 }
 
 static void PHY_Write(char PHY_addr, char datah, char datal)
 {
+	char past;
+
 	ENC_Double_Write((WCR|ECON1), 0x02);	//	Set bank 2
 	ENC_Double_Write((WCR|MIREGADR), PHY_addr);
 	ENC_Double_Write((WCR|MIWRL), datal);
@@ -313,7 +319,7 @@ static void PHY_Write(char PHY_addr, char datah, char datal)
 	ENC_Double_Write((WCR|ECON1), 0x03);	//	Set bank 3
 	
 	// Busy checking
-	char past = ENC_Write_and_Read(RCR|MISTAT);
+	past = ENC_Write_and_Read(RCR|MISTAT);
 	past = past & 0x01;
 	while (past==0x01)
 	{
@@ -325,11 +331,13 @@ static void PHY_Write(char PHY_addr, char datah, char datal)
 
 void ENC_init()
 {
+	char CLKRDY;
+
 	//	Soft Reset
 	ENC_Write(Reset);
 	_delay_ms(1);
 	
-	char CLKRDY = ENC_Write_and_Read(RCR|ESTAT);
+	CLKRDY = ENC_Write_and_Read(RCR|ESTAT);
 	CLKRDY = CLKRDY & 0x01;
 	while (CLKRDY==0x00)
 	{
@@ -487,6 +495,10 @@ bool ENC_Transmit(char data[], uint16_t data_length, char protocol)
 	
 	//	Data length breaking up
 	char high_end ,low_end ;
+	uint8_t DM;
+	uint8_t SM;
+	uint16_t x;
+	char TX_complete;
 
 	
 	ENC_Double_Write((WCR|ECON1), 0x04);	//	Bank 0, RX Enabled
@@ -505,13 +517,13 @@ bool ENC_Transmit(char data[], uint16_t data_length, char protocol)
 	ENC_Continuous_Write(0x00);		
 	
 	// Destination MAC	
-	for(uint8_t DM=0;DM<6;DM++)
+	for(DM=0;DM<6;DM++)
 	{
 		ENC_Continuous_Write(Remote_mac[DM]);
 	}	
 	
 	// Source MAC
-	for(uint8_t SM=0;SM<6;SM++)
+	for(SM=0;SM<6;SM++)
 	{
 		ENC_Continuous_Write(MAC[SM]);
 	}
@@ -531,7 +543,7 @@ bool ENC_Transmit(char data[], uint16_t data_length, char protocol)
 	
 	
 	//	Data
-	for (uint16_t x=0;x<data_length;x++)
+	for (x=0;x<data_length;x++)
 	{
 		ENC_Continuous_Write(data[x]);
 	}
@@ -549,7 +561,7 @@ bool ENC_Transmit(char data[], uint16_t data_length, char protocol)
 	ENC_Double_Write((WCR|EIE), 0x88);
 	ENC_Double_Write((WCR|ECON1), 0x1C);
 	
-	char TX_complete = ENC_Write_and_Read(RCR|ECON1);
+	TX_complete = ENC_Write_and_Read(RCR|ECON1);
 	TX_complete = TX_complete & 0x08;
 	while (TX_complete!=0x00)
 	{
@@ -631,6 +643,7 @@ So, The process becomes:
 int ENC_Receive(char data[])
 {
 	char dummy;
+	uint16_t x;
 	uint16_t length, length_u, Previous_pos, New_pos;	// Previous pos= Position at this moment. New Pos = Next packet position
 	ENC_Double_Write((WCR|ECON1), 0x04); // Bank 0
 	
@@ -655,20 +668,21 @@ int ENC_Receive(char data[])
 	
 	New_pos = ((packet_save_loc_high<<4)|(packet_save_loc_low & 0x00FF));
 
-	//	Getting the length of Ethernet Frame
-	char size_of_frame_A, size_of_frame_B;
-	
-	size_of_frame_A = ENC_Continuous_Read();
-	size_of_frame_B = ENC_Continuous_Read();
-	
-	//	Little endian format. So, need to swap
-	length_u = (size_of_frame_A<<8)|(size_of_frame_B & 0x00FF);
-	length = ((length_u<<8)|(length_u>>8));
-	length-=4;
-	
+	{
+		//	Getting the length of Ethernet Frame
+		char size_of_frame_A, size_of_frame_B;
+
+		size_of_frame_A = ENC_Continuous_Read();
+		size_of_frame_B = ENC_Continuous_Read();
+
+		//	Little endian format. So, need to swap
+		length_u = (size_of_frame_A<<8)|(size_of_frame_B & 0x00FF);
+		length = ((length_u<<8)|(length_u>>8));
+		length-=4;
+	}
 		
 	//	Other status vector
-	for (char x = 0;x<2;x++)
+	for (x = 0;x<2;x++)
 	{
 		dummy = ENC_Continuous_Read();
 	}
@@ -677,7 +691,7 @@ int ENC_Receive(char data[])
 	{
 		length = 500;
 	}
-	for (uint16_t x = 0; x<length;x++)
+	for (x = 0; x<length;x++)
 	{
 		data[x]= ENC_Continuous_Read();
 	}
@@ -704,8 +718,10 @@ int ENC_Receive(char data[])
 
 char NewPacket()
 {
+	char X;
+
 	ENC_Double_Write((WCR|ECON1), 0x05);	//	Bank 1, RX Enabled
-	char X = ENC_Write_and_Read(RCR|EPKTCNT);
+	X = ENC_Write_and_Read(RCR|EPKTCNT);
 	return X;
 }
 
