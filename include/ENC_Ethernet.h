@@ -26,6 +26,8 @@ Needs the following libraries to work properly:
 
 #include "common.h"
 
+#define ETHER_HEADER_SIZE	(14)
+
 void ENC_MasterInit(void);
 void ENC_init();
 bool ENC_Transmit(char data[], uint16_t data_length, char protocol);  // returns True if successful, False if not.

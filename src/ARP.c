@@ -12,7 +12,7 @@ static void ARP_reply(char dest_IP[] , char dest_MAC[]);
 char ARP_check(char data[])
 {
 	char *ether = &data[0];
-	char *arp	= &data[14];
+	char *arp	= &data[ETHER_HEADER_SIZE];
 
 	//イーサネットヘッダ
 	//0-5	宛先MACアドレス
